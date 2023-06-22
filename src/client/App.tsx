@@ -1,11 +1,15 @@
-import {useState, useEffect} from 'react'
-import axios from 'axios'
-import '../styles/index.css'
-import Card from '../components/cards/card'
+import {useState, useEffect} from 'react';
+import axios from 'axios';
+import '../styles/index.css';
+import Card from '../components/cards/card';
+import Pagination from '../components/pagination/Pgination.jsx';
 
 const App = () => {
   const [message, setMessage] = useState('');
+  const [values, setValues] = useState<any>();
+  const [listGames, setListGames] = useState<any>()
 
+  
   useEffect(() => {
     fetch('http://localhost:3001')
       .then(response => response.text())
@@ -13,21 +17,29 @@ const App = () => {
       .catch(error => console.log(error));
   }, []);
 
-
-
-  const [values, setValues] = useState<any>();
-  const [listGames, setListGames] = useState<any>()
-
-  const handleClickButton = () => {
-    axios.post("http://localhost:3001/register",{
+  const handleRegisterGame = () => {
+    axios.post("http://localhost:3001/register", {
       name: values.name,
       cost: values.cost,
       category: values.category,
-    }).then((response) => {
-      console.log("tudo certo por aqui!")
-    })
+    }).then(() => {
+      axios.post("http://localhost:3001/search", {
+        name: values.name,
+        cost: values.cost,
+        category: values.category,
+      }).then((response) => {
+        setListGames([
+          ...listGames,
+          {
+            id: response.data[0].id,
+            name: values.name,
+            cost: values.cost,
+            category: values.category,
+          },
+        ]);
+      });
+    });
   }
-  
 
   useEffect(()=>{
     axios.get("http://localhost:3001/getCards").then((response) => {
@@ -42,14 +54,15 @@ const App = () => {
 
     }))
   }
+
   return (
     <div className="app-container">
       <div className="register-container">
-        <h1 className="register-title ">Scrim games</h1>
+        <h1 className="register-title ">jotinha games</h1>
         <input className='register-input'type="text" placeholder="Nome" name="name" onChange={handleChangeValues}/>
         <input className='register-input' type="text" placeholder="Preço" name="cost"onChange={handleChangeValues}/> 
         <input className='register-input' type="text" placeholder="Categoria" name="category" onChange={handleChangeValues}/>   
-        <button className="register-button" onClick={handleClickButton}>Cadastrar</button>
+        <button className="register-button" onClick={handleRegisterGame}>Cadastrar</button>
       </div>
       {typeof listGames !== "undefined" && listGames.map((value: string | any) => {
        return <Card 
@@ -62,6 +75,7 @@ const App = () => {
             category={value.category}
             ></Card>
       })}
+      <Pagination />
     </div>
   )
 }
