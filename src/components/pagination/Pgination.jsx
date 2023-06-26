@@ -1,26 +1,58 @@
-import React from 'react'
+import React from 'react';
 
 const MAX_ITEMS = 9;
 const MAX_LEFT = (MAX_ITEMS - 1) / 2;
 
-const pagination = ({limit, total, offset, setOffset}) => {
-
-  const currentPage = offset ? (offset / limit) + 1 : 1;
-  // existe offset? (sim) = offset / limit(de item na pagina) + 1 ou 1
+const Pagination = ({
+  limit,
+  total,
+  offset,
+  setOffset
+}) => {
+  const current = offset ? offset / limit + 1 : 1;
   const pages = Math.ceil(total / limit);
-  //Math.ceil = teto; para nao dar numeros quebrados
-  const frist = Math.max(currentPage - MAX_LEFT, 1);
-  //pegar o maior numero, para não dar numero negativo na paginação
+  const first = Math.max(current - MAX_LEFT, 1);
+
+  function onPageChange(page) {
+    setOffset((page - 1) * limit);
+  }
 
   return (
-    <ul>
-      {Array.from({ length: MAX_ITEMS }).map((_, index) => index + frist).map((page) => (
-        <li>
-          <button onclick={()=> setOffset((page - 1) * limit)}>{page}</button>
-        </li>
-      ))}
+    <ul className="pagination">
+      <li>
+        <button
+          onClick={() => onPageChange(current - 1)}
+          disabled={current === 1}
+        >
+          Anterior
+        </button>
+      </li>
+      {Array.from({ length: Math.min(MAX_ITEMS, pages) })
+        .map((_, index) => index + first)
+        .map((page) => (
+          <li key={page}>
+            <button
+              onClick={() => onPageChange(page)}
+              className={
+                page === current
+                  ? 'pagination__item--active'
+                  : null
+              }
+            >
+              {page}
+            </button>
+          </li>
+        ))}
+      <li>
+        <button
+          onClick={() => onPageChange(current + 1)}
+          disabled={current === pages}
+        >
+          Próxima
+        </button>
+      </li>
     </ul>
-  )
-}
+  );
+};
 
-export default pagination
+export default Pagination;
