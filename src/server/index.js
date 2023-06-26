@@ -48,18 +48,18 @@ app.get('/p1/games', async (req, res) => {
   }
 })
 
-// app.post("/search", (req, res) => {
-//   const { name } = req.body;
-//   const { cost } = req.body;
-//   const { category } = req.body;
+app.post("/search", (req, res) => {
+  const { name } = req.body;
+  const { cost } = req.body;
+  const { category } = req.body;
 
-//   let SQL =
-//     "SELECT * from games WHERE name = ? AND cost = ? AND category = ?";
-//   db.query(SQL, [name, cost, category], (err, result) => {
-//     if (err) res.send(err);
-//     res.send(result);
-//   });
-// });
+  let SQL =
+    "SELECT * from games WHERE name = ? AND cost = ? AND category = ?";
+  db.query(SQL, [name, cost, category], (err, result) => {
+    if (err) res.send(err);
+    res.send(result);
+  });
+});
 
 app.get("/getCards", (req, res) => {
   let SQL = "SELECT * FROM games "  //SELECT * FROM games WHERE ID >= 1 AND ID <= 29;
